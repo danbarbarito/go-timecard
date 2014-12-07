@@ -74,3 +74,6 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+#Ignores timecard files
+*.tc
