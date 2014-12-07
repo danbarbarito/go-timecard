@@ -17,12 +17,13 @@ type Shift struct {
 }
 
 func createShifts(filename string) {
+	//log.Println("Reading file " + filename) TODO - Properly set up logger so it logs to a file
 	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatal("Error opening input file:", err)
 	}
 	scanner := bufio.NewScanner(f) //Scanner used for navigating the file
-	shift := Shift{}         //shift struct that will contains the users shift
+	shift := Shift{}               //shift struct that will contains the users shift
 
 	for scanner.Scan() {
 		words := strings.Split(scanner.Text(), " ") //Split lines by spaces to access each word
@@ -31,10 +32,10 @@ func createShifts(filename string) {
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
 		}
-		shift.startTime[0],shift.startTime[1],shift.startTime[2] = startTime.Clock()
+		shift.startTime[0], shift.startTime[1], shift.startTime[2] = startTime.Clock()
 		//Set time to a.m. or p.m.
 		var amOrPm = "a.m"
-		if(shift.startTime[0] > 12){
+		if shift.startTime[0] > 12 {
 			shift.startTime[3] = 1 //Set to p.m.
 			amOrPm = "p.m"
 		}
@@ -44,11 +45,11 @@ func createShifts(filename string) {
 		}
 		shift.hours = hours
 		//Convert hour from 24 hours to 12 hours
-		var startHour = strconv.FormatInt(int64(shift.startTime[0]),10)
-		if(shift.startTime[0] > 12){
-			startHour = strconv.FormatInt(int64(shift.startTime[0]-12),10)
+		var startHour = strconv.FormatInt(int64(shift.startTime[0]), 10)
+		if shift.startTime[0] > 12 {
+			startHour = strconv.FormatInt(int64(shift.startTime[0]-12), 10)
 		}
-		fmt.Printf("You work on %s starting at %s:%02d%s for %.1f hours\n",shift.weekday,startHour,shift.startTime[1],amOrPm,shift.hours)
+		fmt.Printf("You work on %s starting at %s:%02d%s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.hours)
 	}
 }
 
@@ -59,6 +60,5 @@ func main() {
 		log.Fatal("Must include a filename")
 	}
 	filename := os.Args[1]
-	fmt.Println("Reading file...")
 	createShifts(filename)
 }
