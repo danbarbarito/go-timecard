@@ -3,14 +3,25 @@ package main
 import (
 	"fmt"
 	"os"
-	"io/ioutil"
+	"log"
+	"bufio"
 )
 
 
 func main() {
+	//Check if filename is provided
+	if len(os.Args) == 1{
+		fmt.Print("Usage: ./go-timecards <hours file>\n\n\n")
+		log.Fatal("Must include a filename")
+	}
+	fmt.Println("Reading file...")
 	filename := os.Args[1]
-	input, err := ioutil.ReadFile(filename)
-	if (err == nil){
-		fmt.Print(string(input))
+	f, err := os.Open(filename)
+	if err != nil {
+		log.Fatal("Error opening input file:", err)
+	}
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan(){
+		fmt.Println(scanner.Text());
 	}
 }
