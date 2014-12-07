@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Created by https://www.gitignore.io
 
 ### Intellij ###
@@ -50,6 +51,8 @@ crashlytics-build.properties
 
 
 ### Go ###
+=======
+>>>>>>> bbec45f9932865c31a176e25b17b19265572a9af
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -74,4 +77,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+<<<<<<< HEAD
 
+=======
+>>>>>>> bbec45f9932865c31a176e25b17b19265572a9af
