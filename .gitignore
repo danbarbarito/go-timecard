@@ -78,3 +78,6 @@ _testmain.go
 
 #Ignores timecard files
 *.tc
+
+#binary
+go-timecard
