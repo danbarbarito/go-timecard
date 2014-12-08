@@ -11,14 +11,15 @@ import (
 )
 
 type Shift struct {
-	weekday   string
-	startTime [4]int // index 3 indicates a.m. or p.m.	0=a.m	1=p.m
-	hours     float64
+	weekday     string
+	startTime   [4]int //index 3 indicates a.m. or p.m.	0=a.m	1=p.m
+	hours       float64
+	mericanHour string //None of that commie 24 hour time shenanigans
+	amOrPm      string
 }
 
-
 //Returns the start hour as a string and a string am or pm
-func timeStrings(startTime [4]int)(string, string){
+func timeStrings(startTime [4]int) (string, string) {
 	//Set time to a.m. or p.m.
 	var amOrPm = "a.m"
 	if startTime[0] > 12 {
@@ -33,7 +34,7 @@ func timeStrings(startTime [4]int)(string, string){
 	return startHour, amOrPm
 }
 
-func generateShifts(filename string) []Shift{
+func generateShifts(filename string) []Shift {
 	var shifts []Shift
 	//log.Println("Reading file " + filename) TODO - Properly set up logger so it logs to a file
 	f, err := os.Open(filename)
@@ -57,6 +58,7 @@ func generateShifts(filename string) []Shift{
 		}
 		shift.hours = hours
 		startHour, amOrPm := timeStrings(shift.startTime)
+		shift.mericanHour, shift.amOrPm = startHour, amOrPm
 		fmt.Printf("You work on %s starting at %s:%02d %s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.hours)
 		shifts = append(shifts, shift)
 	}
