@@ -16,7 +16,25 @@ type Shift struct {
 	hours     float64
 }
 
-func createShifts(filename string) {
+
+//Returns the start hour as a string and a string am or pm
+func timeStrings(startTime [4]int)(string, string){
+	//Set time to a.m. or p.m.
+	var amOrPm = "a.m"
+	if startTime[0] > 12 {
+		startTime[3] = 1 //Set to p.m.
+		amOrPm = "p.m"
+	}
+	//Convert hour from 24 hours to 12 hours
+	var startHour = strconv.FormatInt(int64(startTime[0]), 10)
+	if startTime[0] > 12 {
+		startHour = strconv.FormatInt(int64(startTime[0]-12), 10)
+	}
+	return startHour, amOrPm
+}
+
+func generateShifts(filename string) []Shift{
+	var shifts []Shift
 	//log.Println("Reading file " + filename) TODO - Properly set up logger so it logs to a file
 	f, err := os.Open(filename)
 	if err != nil {
@@ -33,24 +51,16 @@ func createShifts(filename string) {
 			log.Fatal("Cannot parse hours file:", err)
 		}
 		shift.startTime[0], shift.startTime[1], shift.startTime[2] = startTime.Clock()
-		//Set time to a.m. or p.m.
-		var amOrPm = "a.m"
-		if shift.startTime[0] > 12 {
-			shift.startTime[3] = 1 //Set to p.m.
-			amOrPm = "p.m"
-		}
 		hours, err := strconv.ParseFloat(words[2], 32) //Parse the hours
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
 		}
 		shift.hours = hours
-		//Convert hour from 24 hours to 12 hours
-		var startHour = strconv.FormatInt(int64(shift.startTime[0]), 10)
-		if shift.startTime[0] > 12 {
-			startHour = strconv.FormatInt(int64(shift.startTime[0]-12), 10)
-		}
-		fmt.Printf("You work on %s starting at %s:%02d%s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.hours)
+		startHour, amOrPm := timeStrings(shift.startTime)
+		fmt.Printf("You work on %s starting at %s:%02d %s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.hours)
+		shifts = append(shifts, shift)
 	}
+	return shifts
 }
 
 func main() {
@@ -60,5 +70,6 @@ func main() {
 		log.Fatal("Must include a filename")
 	}
 	filename := os.Args[1]
-	createShifts(filename)
+	shifts := generateShifts(filename)
+	fmt.Print(shifts)
 }
