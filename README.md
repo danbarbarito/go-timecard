@@ -8,7 +8,7 @@ A time card manager.
 
     ./go-timecard <hours file>
     
-**Hours File Layout**
+#**Hours File Layout**
 
 #### (Day | Start time | Length of shift)
 
