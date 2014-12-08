@@ -1,4 +1,4 @@
 go-timecard
 ===========
 
-A time card calculator.
+A time card manager.
