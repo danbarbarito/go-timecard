@@ -74,4 +74,5 @@ func main() {
 	filename := os.Args[1]
 	shifts := generateShifts(filename)
 	fmt.Print(shifts)
+	fmt.Print("\n")
 }
