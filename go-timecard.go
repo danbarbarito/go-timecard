@@ -68,7 +68,7 @@ func generateShifts(filename string) []Shift {
 func main() {
 	//Check if filename is provided
 	if len(os.Args) == 1 {
-		fmt.Print("Usage: ./go-timecards <hours file>\n\n\n")
+		fmt.Print("Usage: go-timecard <hours file>\n\n\n")
 		log.Fatal("Must include a filename")
 	}
 	filename := os.Args[1]
