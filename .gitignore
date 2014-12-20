@@ -27,3 +27,4 @@ _testmain.go
 
 #Ignores timecard files
 *.tc
+go-timecard

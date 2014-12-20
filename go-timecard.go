@@ -65,6 +65,15 @@ func generateShifts(filename string) []Shift {
 	return shifts
 }
 
+//Returns the date of when the next weekday begins relative to the 'from' time
+func DateOfWeekday(weekday string, from time.Time) time.Time {
+	var nextDay time.Time
+	nextDay = time.Now()
+	fmt.Print(weekday + ", ")
+	fmt.Println(nextDay.Date())
+	return nextDay
+}
+
 func main() {
 	//Check if filename is provided
 	if len(os.Args) == 1 {
@@ -73,6 +82,7 @@ func main() {
 	}
 	filename := os.Args[1]
 	shifts := generateShifts(filename)
-	fmt.Print(shifts)
+	fmt.Println(shifts)
+	DateOfWeekday(shifts[0].weekday, time.Now())
 	fmt.Print("\n")
 }
