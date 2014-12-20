@@ -6,7 +6,7 @@ A time card manager.
 
 **Usage**
 
-    ./go-timecard <hours file>
+    go-timecard <hours file>
     
 #**Hours File Layout**
 
