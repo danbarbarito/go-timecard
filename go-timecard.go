@@ -11,11 +11,22 @@ import (
 )
 
 type Shift struct {
-	weekday     string
+	weekday     time.Weekday
 	startTime   [4]int //index 3 indicates a.m. or p.m.	0=a.m	1=p.m
 	hours       float64
 	mericanHour string //None of that commie 24 hour time shenanigans
 	amOrPm      string
+}
+
+//Map to convert strings to time.Weekday
+var days = map[string]time.Weekday{
+	"Sunday":    time.Sunday,
+	"Monday":    time.Monday,
+	"Tuesday":   time.Tuesday,
+	"Wednesday": time.Wednesday,
+	"Thursday":  time.Thursday,
+	"Friday":    time.Friday,
+	"Saturday":  time.Saturday,
 }
 
 //Returns the start hour as a string and a string am or pm
@@ -41,12 +52,17 @@ func generateShifts(filename string) []Shift {
 	if err != nil {
 		log.Fatal("Error opening input file:", err)
 	}
+
 	scanner := bufio.NewScanner(f) //Scanner used for navigating the file
 	shift := Shift{}               //shift struct that will contains the users shift
 
 	for scanner.Scan() {
 		words := strings.Split(scanner.Text(), " ") //Split lines by spaces to access each word
-		shift.weekday = words[0]
+		_, ok := days[strings.Title(words[0])]      //Check if the weekday is correct
+		if !ok {
+			log.Fatal("Cannot parse hours file: Weekday is incorrect")
+		}
+		shift.weekday = days[strings.Title(words[0])]      //Store the first word as a time.Weekday
 		startTime, _ := time.Parse(time.Kitchen, words[1]) //Parse the time
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
@@ -66,11 +82,15 @@ func generateShifts(filename string) []Shift {
 }
 
 //Returns the date of when the next weekday begins relative to the 'from' time
-func DateOfWeekday(weekday string, from time.Time) time.Time {
+func DateOfWeekday(weekday time.Weekday, from time.Time) time.Time {
 	var nextDay time.Time
-	nextDay = time.Now()
-	fmt.Print(weekday + ", ")
-	fmt.Println(nextDay.Date())
+	for i := 0; i < 7; i++ {
+		nextDay = from.AddDate(0, 0, i)
+		if nextDay.Weekday() == weekday {
+			fmt.Println("Found it.")
+			break
+		}
+	}
 	return nextDay
 }
 
@@ -83,6 +103,6 @@ func main() {
 	filename := os.Args[1]
 	shifts := generateShifts(filename)
 	fmt.Println(shifts)
-	DateOfWeekday(shifts[0].weekday, time.Now())
-	fmt.Print("\n")
+	day := DateOfWeekday(time.Wednesday, time.Now())
+	fmt.Println(day.Date())
 }
