@@ -13,7 +13,7 @@ import (
 type Shift struct {
 	weekday     time.Weekday
 	startTime   [4]int //index 3 indicates a.m. or p.m.	0=a.m	1=p.m
-	hours       float64
+	duration    float64
 	mericanHour string //None of that commie 24 hour time shenanigans
 	amOrPm      string
 }
@@ -68,14 +68,14 @@ func generateShifts(filename string) []Shift {
 			log.Fatal("Cannot parse hours file:", err)
 		}
 		shift.startTime[0], shift.startTime[1], shift.startTime[2] = startTime.Clock()
-		hours, err := strconv.ParseFloat(words[2], 32) //Parse the hours
+		duration, err := strconv.ParseFloat(words[2], 32) //Parse the duration
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
 		}
-		shift.hours = hours
+		shift.duration = duration
 		startHour, amOrPm := timeStrings(shift.startTime)
 		shift.mericanHour, shift.amOrPm = startHour, amOrPm
-		fmt.Printf("You work on %s starting at %s:%02d %s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.hours)
+		fmt.Printf("You work on %s starting at %s:%02d %s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.duration)
 		shifts = append(shifts, shift)
 	}
 	return shifts
@@ -103,6 +103,6 @@ func main() {
 	filename := os.Args[1]
 	shifts := generateShifts(filename)
 	fmt.Println(shifts)
-	day := DateOfWeekday(time.Wednesday, time.Now())
+	day := DateOfWeekday(time.Friday, time.Now())
 	fmt.Println(day.Date())
 }
