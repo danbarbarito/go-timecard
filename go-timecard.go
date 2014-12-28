@@ -34,7 +34,7 @@ func generateShifts(filename string) []Shift {
 	//log.Println("Reading file " + filename) TODO - Properly set up logger so it logs to a file
 	f, err := os.Open(filename)
 	if err != nil {
-		log.Fatal("Error opening input file:", err)
+		log.Fatal("Error opening hours file: ", err)
 	}
 
 	scanner := bufio.NewScanner(f) //Scanner used for navigating the file
@@ -48,15 +48,15 @@ func generateShifts(filename string) []Shift {
 		if !ok {
 			log.Fatal("Cannot parse hours file: Weekday is incorrect")
 		}
-		shift.weekday = days[strings.Title(words[0])]      //Store the first word as a time.Weekday
-		startTime, _ := time.Parse(time.Kitchen, words[1]) //Parse the time
+		shift.weekday = days[strings.Title(words[0])]        //Store the first word as a time.Weekday
+		startTime, err := time.Parse(time.Kitchen, words[1]) //Parse the time
 		if err != nil {
-			log.Fatal("Cannot parse hours file:", err)
+			log.Fatal("Cannot parse hours file: ", err)
 		}
 		shift.startTime[0], shift.startTime[1], shift.startTime[2] = startTime.Clock()
 		duration, err := strconv.ParseFloat(words[2], 32) //Parse the duration
 		if err != nil {
-			log.Fatal("Cannot parse hours file:", err)
+			log.Fatal("Cannot parse hours file: ", err)
 		}
 		shift.duration = duration
 
