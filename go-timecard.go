@@ -50,7 +50,6 @@ func generateShifts(filename string) []Shift {
 		}
 		shift.weekday = days[strings.Title(words[0])]      //Store the first word as a time.Weekday
 		startTime, _ := time.Parse(time.Kitchen, words[1]) //Parse the time
-		fmt.Println(startTime.Clock())
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
 		}
