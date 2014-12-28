@@ -11,11 +11,11 @@ import (
 )
 
 type Shift struct {
-	weekday     time.Weekday
-	startTime   [4]int //index 3 indicates a.m. or p.m.	0=a.m	1=p.m
-	duration    float64
-	mericanHour string //None of that commie 24 hour time shenanigans
-	amOrPm      string
+	weekday   time.Weekday
+	startTime [4]int //index 3 indicates a.m. or p.m.	0=a.m	1=p.m
+	duration  float64
+	startHour int //Start hour in 12 hours instead of 24 hours
+	amOrPm    string
 }
 
 //Map to convert strings to time.Weekday
@@ -27,22 +27,6 @@ var days = map[string]time.Weekday{
 	"Thursday":  time.Thursday,
 	"Friday":    time.Friday,
 	"Saturday":  time.Saturday,
-}
-
-//Returns the start hour as a string and a string am or pm
-func timeStrings(startTime [4]int) (string, string) {
-	//Set time to a.m. or p.m.
-	var amOrPm = "a.m"
-	if startTime[0] > 12 {
-		startTime[3] = 1 //Set to p.m.
-		amOrPm = "p.m"
-	}
-	//Convert hour from 24 hours to 12 hours
-	var startHour = strconv.FormatInt(int64(startTime[0]), 10)
-	if startTime[0] > 12 {
-		startHour = strconv.FormatInt(int64(startTime[0]-12), 10)
-	}
-	return startHour, amOrPm
 }
 
 func generateShifts(filename string) []Shift {
@@ -57,6 +41,8 @@ func generateShifts(filename string) []Shift {
 	shift := Shift{}               //shift struct that will contains the users shift
 
 	for scanner.Scan() {
+		var startHour int
+		var amOrPm string
 		words := strings.Split(scanner.Text(), " ") //Split lines by spaces to access each word
 		_, ok := days[strings.Title(words[0])]      //Check if the weekday is correct
 		if !ok {
@@ -64,6 +50,7 @@ func generateShifts(filename string) []Shift {
 		}
 		shift.weekday = days[strings.Title(words[0])]      //Store the first word as a time.Weekday
 		startTime, _ := time.Parse(time.Kitchen, words[1]) //Parse the time
+		fmt.Println(startTime.Clock())
 		if err != nil {
 			log.Fatal("Cannot parse hours file:", err)
 		}
@@ -73,9 +60,22 @@ func generateShifts(filename string) []Shift {
 			log.Fatal("Cannot parse hours file:", err)
 		}
 		shift.duration = duration
-		startHour, amOrPm := timeStrings(shift.startTime)
-		shift.mericanHour, shift.amOrPm = startHour, amOrPm
-		fmt.Printf("You work on %s starting at %s:%02d %s for %.1f hours\n", shift.weekday, startHour, shift.startTime[1], amOrPm, shift.duration)
+
+		//Convert to 12 hours time and set whether it is a.m or p.m
+		if shift.startTime[0] > 12 {
+			shift.startTime[3] = 1 //Set to p.m
+			amOrPm = "p.m"
+			startHour = (shift.startTime[0] - 12)
+		} else if shift.startTime[0] == 12 {
+			shift.startTime[3] = 1 //Set to p.m
+			amOrPm = "p.m"
+			startHour = (shift.startTime[0])
+		} else {
+			shift.startTime[3] = 0 //Set to a.m
+			amOrPm = "a.m"
+			startHour = shift.startTime[0]
+		}
+		shift.startHour, shift.amOrPm = startHour, amOrPm
 		shifts = append(shifts, shift)
 	}
 	return shifts
@@ -87,22 +87,38 @@ func DateOfWeekday(weekday time.Weekday, from time.Time) time.Time {
 	for i := 0; i < 7; i++ {
 		nextDay = from.AddDate(0, 0, i)
 		if nextDay.Weekday() == weekday {
-			fmt.Println("Found it.")
 			break
 		}
 	}
 	return nextDay
 }
 
+//Prints all of the shifts to the stdout
+func PrintShifts(shifts []Shift) {
+	for i := 0; i < len(shifts); i++ {
+		shift := shifts[i]
+		fmt.Printf("You work on %s starting at %d:%02d %s for %.1f hours\n", shift.weekday, shift.startHour, shift.startTime[1], shift.amOrPm, shift.duration)
+	}
+}
+
+//Returns an array of shifts worked from the given time until given duration
+func ShiftsWorked(shifts []Shift, from time.Time, until time.Duration) []Shift {
+	var shiftsWorked []Shift
+	for i := 0; i < len(shifts); i++ {
+		shiftsWorked[i] = shifts[i] //The shifts worked are going to be the same as the given shifts except for the
+	}
+	var _ = days["Sunday"]
+	return shiftsWorked
+}
+
 func main() {
 	//Check if filename is provided
-	if len(os.Args) == 1 {
+	if len(os.Args) != 2 {
 		fmt.Print("Usage: go-timecard <hours file>\n\n\n")
 		log.Fatal("Must include a filename")
 	}
 	filename := os.Args[1]
-	shifts := generateShifts(filename)
-	fmt.Println(shifts)
-	day := DateOfWeekday(time.Friday, time.Now())
-	fmt.Println(day.Date())
+	shifts := generateShifts(filename) //Store all of the shifts found in the hours file
+	PrintShifts(shifts)                //Prints the shifts
+	//day := DateOfWeekday(time.Friday, time.Now())
 }
