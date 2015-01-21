@@ -12,7 +12,7 @@ A time card manager.
 
 #### (Day | Start time | Length of shift)
 
-    Mon 7:00AM 5
-    Tue 1:00PM 2
-    Thurs 1:00PM 2
-    Fri 1:30PM 3.5
+    Monday 7:00AM 5
+    Tuesday 1:00PM 2
+    Thursday 1:00PM 2
+    Friday 1:30PM 3.5
